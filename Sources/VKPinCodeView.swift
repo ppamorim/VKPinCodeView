@@ -72,6 +72,8 @@ public final class VKPinCodeView: UIView {
     /// Setup a preferred error reset type. Default value is none.
     public var resetAfterError = ResetType.none
     
+    public var closeKeyboardOnComplete = true
+    
     /// Fires when PIN is completely entered. Provides actuall code and completion closure to set error state.
     public var onComplete: ((_ code: String, _ pinView: VKPinCodeView) -> Void)?
     
@@ -203,7 +205,9 @@ public final class VKPinCodeView: UIView {
         
         if _code.count == length {
 
-            _textField.resignFirstResponder()
+            if closeKeyboardOnComplete {
+                _textField.resignFirstResponder()
+            }
             onComplete?(_code, self)
         }
     }
