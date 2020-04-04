@@ -146,6 +146,10 @@ public final class VKPinCodeView: UIView {
         _stack.arrangedSubviews.forEach({ ($0 as! VKLabel).text = nil })
         isError = false
     }
+
+    public func closeKeyboard() {
+        _textField.resignFirstResponder()
+    }
     
     // MARK: Private methods
     
@@ -206,7 +210,7 @@ public final class VKPinCodeView: UIView {
         if _code.count == length {
 
             if closeKeyboardOnComplete {
-                _textField.resignFirstResponder()
+                closeKeyboard()
             }
             onComplete?(_code, self)
         }
