@@ -93,6 +93,11 @@ public final class VKPinCodeView: UIView {
         didSet { createLabels() }
     }
     
+    override var isEnabled: Bool {
+        didSet {
+            _textField.isEnabled = newValue
+        }
+    }
     
     // MARK: - Initializers
 
