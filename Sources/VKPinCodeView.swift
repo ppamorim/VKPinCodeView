@@ -93,7 +93,7 @@ public final class VKPinCodeView: UIView {
         didSet { createLabels() }
     }
     
-    var isEnabled: Bool = true {
+    public var isEnabled: Bool = true {
         didSet {
             _textField.isEnabled = isEnabled
         }
