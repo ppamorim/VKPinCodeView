@@ -308,7 +308,7 @@ extension VKPinCodeView: UITextFieldDelegate {
                    replacementString string: String) -> Bool {
         
         if !isEnabled {
-            return
+            return false
         }
         
         if string.isEmpty { return true }
