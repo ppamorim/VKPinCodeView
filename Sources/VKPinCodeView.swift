@@ -95,7 +95,7 @@ public final class VKPinCodeView: UIView {
     
     public var isEnabled: Bool = true {
         didSet {
-            _textField.isEnabled = isEnabled
+//             _textField.isEnabled = isEnabled
         }
     }
     
@@ -306,6 +306,10 @@ extension VKPinCodeView: UITextFieldDelegate {
     public func textField(_ textField: UITextField,
                    shouldChangeCharactersIn range: NSRange,
                    replacementString string: String) -> Bool {
+        
+        if !isEnabled {
+            return
+        }
         
         if string.isEmpty { return true }
         return (validator?(string) ?? true) && _code.count < length
