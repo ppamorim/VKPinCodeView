@@ -95,7 +95,13 @@ public final class VKPinCodeView: UIView {
     
     public var isEnabled: Bool = true {
         didSet {
-//             _textField.isEnabled = isEnabled
+            self.alpha = isEnabled ? 1.0 : 0.5
+        }
+    }
+
+    public var isSecureTextEntry: Bool = false {
+        didSet {
+            self._textField.isSecureTextEntry = isSecureTextEntry
         }
     }
     
