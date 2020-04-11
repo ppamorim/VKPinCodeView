@@ -78,34 +78,33 @@ public final class BorderStyle: EntryViewStyle {
 
             if label.animateWhileSelected {
 
-                let colors = [_borderColor.cgColor,
-                _selectedBorderColor.cgColor,
-                _selectedBorderColor.cgColor,
-                _borderColor.cgColor]
+                let colors = [
+                    _borderColor.cgColor,
+                    _selectedBorderColor.cgColor,
+                    _selectedBorderColor.cgColor,
+                    _borderColor.cgColor
+                ]
 
                 let animation = animateSelection(keyPath: #keyPath(CALayer.borderColor), values: colors)
                 layer.add(animation, forKey: "borderColorAnimation")
             }
-        } else {
-
-            layer.removeAllAnimations()
-            layer.borderColor = _borderColor.cgColor
-            layer.backgroundColor = _backgroundColor.cgColor
+            return
         }
+
+        layer.removeAllAnimations()
+        layer.borderColor = _borderColor.cgColor
+        layer.backgroundColor = _backgroundColor.cgColor
     }
 
     public func onUpdateErrorState(_ label: VKLabel) {
-
         if label.isError {
-
             label.layer.removeAllAnimations()
             label.layer.borderColor = _errorBorderColor.cgColor
             label.textColor = _errorTextColor
-        } else {
-
-            label.layer.borderColor = _borderColor.cgColor
-            label.textColor = _textColor
+            return
         }
+        label.layer.borderColor = _borderColor.cgColor
+        label.textColor = _textColor
     }
 
     public func onLayoutSubviews(_ label: VKLabel) {}

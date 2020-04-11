@@ -185,25 +185,23 @@ public final class VKPinCodeView: UIView {
         }
 
         if _code.count > text.count {
-
             deleteChar(text)
             var index: Int = _code.count - 1
             if index < 0 { index = 0 }
             highlightActiveLabel(index)
         } else {
-
             appendChar(text)
             let index: Int = _code.count - 1
             highlightActiveLabel(index)
         }
 
         if _code.count == length {
-
             if closeKeyboardOnComplete {
                 closeKeyboard()
             }
             onComplete?(_code, self)
         }
+
     }
 
     private func deleteChar(_ text: String) {
@@ -233,9 +231,10 @@ public final class VKPinCodeView: UIView {
             return
         }
 
-        let charIndex = text.index(text.startIndex, offsetBy: index)
+        let charIndex: Int = text.index(text.startIndex, offsetBy: index)
         let char: String = String(text[charIndex])
-        activeLabel.text = isSecureTextEntry ? "•" : char
+        activeLabel.text = isSecureTextEntry ? "\u{11044}" : char
+//        activeLabel.text = isSecureTextEntry ? "\u{2022}" : char
         _code += char
 
     }
@@ -249,7 +248,7 @@ public final class VKPinCodeView: UIView {
     }
 
     private func turnOffSelectedLabel() {
-        if let label = _stack.arrangedSubviews[_activeIndex] as? VKLabel {
+        if let label: VKLabel = _stack.arrangedSubviews[_activeIndex] as? VKLabel {
             label.isSelected = false
         }
     }
