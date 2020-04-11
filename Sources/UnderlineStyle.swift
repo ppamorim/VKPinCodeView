@@ -26,7 +26,6 @@ public final class UnderlineStyle: EntryViewStyle {
 
     private var _errorLineColor: UIColor
 
-
     public required init(
         font: UIFont = UIFont.systemFont(ofSize: 22),
         textColor: UIColor = .black,
@@ -72,8 +71,7 @@ public final class UnderlineStyle: EntryViewStyle {
                 let animation = animateSelection(keyPath: #keyPath(CAShapeLayer.strokeColor), values: colors)
                 _line.add(animation, forKey: "strokeColorAnimation")
             }
-        }
-        else {
+        } else {
 
             _line.removeAllAnimations()
             _line.strokeColor = _lineColor.cgColor
@@ -87,8 +85,7 @@ public final class UnderlineStyle: EntryViewStyle {
             _line.removeAllAnimations()
             _line.strokeColor = _errorLineColor.cgColor
             label.textColor = _errorTextColor
-        }
-        else {
+        } else {
 
             _line.strokeColor = _lineColor.cgColor
             label.textColor = _textColor

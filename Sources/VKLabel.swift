@@ -12,22 +12,22 @@ import UIKit
 public class VKLabel: UILabel {
 
     private var _style: EntryViewStyle?
-    
+
     /// Enable or disable selection animation for active input item. Default value is true.
     public var animateWhileSelected = true
-    
+
     /// Enable or disable selection for displaying active state.
     public var isSelected = false {
-        
+
         didSet { if oldValue != isSelected { updateSelectedState() } }
     }
-    
+
     /// Enable or disable selection for displaying error state.
     public var isError = false {
-        
+
         didSet {  updateErrorState() }
     }
-    
+
     // MARK: - Initializers
 
     /// Prefered initializer if you don't use storyboards or nib files.
@@ -37,20 +37,19 @@ public class VKLabel: UILabel {
         setStyle(style)
     }
 
-    
     public required init?(coder aDecoder: NSCoder) {
-        
+
         super.init(coder: aDecoder)
     }
-    
+
     // MARK: - Overrides
-    
+
     public override func layoutSubviews() {
-        
+
         super.layoutSubviews()
         _style?.onLayoutSubviews(self)
     }
-    
+
     // MARK: - Public methods
 
     /// Set appearence style.
@@ -60,14 +59,13 @@ public class VKLabel: UILabel {
         _style?.onSetStyle(self)
     }
 
-    
     // MARK: - Private methods
-    
+
     private func updateSelectedState() {
 
         _style?.onUpdateSelectedState(self)
     }
-    
+
     private func updateErrorState() {
 
         _style?.onUpdateErrorState(self)

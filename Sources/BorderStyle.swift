@@ -30,7 +30,6 @@ public final class BorderStyle: EntryViewStyle {
 
     private var _selectedBackgroundColor: UIColor
 
-
     public required init(
         font: UIFont = UIFont.systemFont(ofSize: 22),
         textColor: UIColor = .black,
@@ -87,8 +86,7 @@ public final class BorderStyle: EntryViewStyle {
                 let animation = animateSelection(keyPath: #keyPath(CALayer.borderColor), values: colors)
                 layer.add(animation, forKey: "borderColorAnimation")
             }
-        }
-        else {
+        } else {
 
             layer.removeAllAnimations()
             layer.borderColor = _borderColor.cgColor
@@ -103,8 +101,7 @@ public final class BorderStyle: EntryViewStyle {
             label.layer.removeAllAnimations()
             label.layer.borderColor = _errorBorderColor.cgColor
             label.textColor = _errorTextColor
-        }
-        else {
+        } else {
 
             label.layer.borderColor = _borderColor.cgColor
             label.textColor = _textColor

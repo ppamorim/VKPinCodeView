@@ -9,29 +9,27 @@
 import UIKit
 
 class ViewController: UIViewController {
-    
+
     @IBOutlet weak var firstContainer: ShadowView!
-    
+
     @IBOutlet weak var secondContainer: ShadowView!
-    
+
     @IBOutlet weak var firstPinView: VKPinCodeView!
-    
+
     @IBOutlet weak var secondPinView: VKPinCodeView!
 
-
     override func viewDidLoad() {
-        
+
         super.viewDidLoad()
         firstContainer.layer.cornerRadius = 20
         secondContainer.layer.cornerRadius = 20
         setupPinViews()
     }
-    
+
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
+
         view.endEditing(true)
     }
-
 
     private func setupPinViews() {
 
@@ -41,7 +39,7 @@ class ViewController: UIViewController {
         }
 
         firstPinView.validator = validator(_:)
-        
+
         secondPinView.onSettingStyle = {
 
             BorderStyle(
@@ -58,10 +56,9 @@ class ViewController: UIViewController {
 
         secondPinView.validator = validator(_:)
     }
-    
+
     private func validator(_ code: String) -> Bool {
-        
+
         return !code.trimmingCharacters(in: CharacterSet.decimalDigits.inverted).isEmpty
     }
 }
-
