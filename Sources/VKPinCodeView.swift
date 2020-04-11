@@ -233,7 +233,13 @@ public final class VKPinCodeView: UIView {
 
         let charIndex: String.Index = text.index(text.startIndex, offsetBy: index)
         let char: String = String(text[charIndex])
-        activeLabel.text = isSecureTextEntry ? "\u{2022}" : char
+        activeLabel.text = char
+        if isSecureTextEntry {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+//                activeLabel.text = "\u{2022}"
+                activeLabel.backgroundColor = UIColor.white
+            }
+        }
         _code += char
 
     }
