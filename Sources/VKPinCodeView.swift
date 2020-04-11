@@ -231,7 +231,7 @@ public final class VKPinCodeView: UIView {
             return
         }
 
-        let charIndex: Int = text.index(text.startIndex, offsetBy: index)
+        let charIndex: String.Index = text.index(text.startIndex, offsetBy: index)
         let char: String = String(text[charIndex])
         activeLabel.text = isSecureTextEntry ? "\u{11044}" : char
 //        activeLabel.text = isSecureTextEntry ? "\u{2022}" : char
