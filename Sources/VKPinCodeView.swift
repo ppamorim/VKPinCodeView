@@ -237,6 +237,7 @@ public final class VKPinCodeView: UIView {
         if isSecureTextEntry {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 //                activeLabel.text = "\u{2022}"
+                activeLabel.text = nil
                 activeLabel.backgroundColor = UIColor.white
             }
         }
