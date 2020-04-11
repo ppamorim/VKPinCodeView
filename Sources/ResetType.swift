@@ -9,6 +9,5 @@
 import Foundation
 
 public enum ResetType {
-
     case none, onUserInteraction, afterError(_ delay: TimeInterval)
 }

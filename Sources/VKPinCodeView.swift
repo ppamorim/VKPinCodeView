@@ -217,7 +217,7 @@ public final class VKPinCodeView: UIView {
         }
 
         onSettingStyle?().onSetStyle(previous)
-        previous.text = ""
+        previous.text = nil
         _code = text
 
     }
@@ -238,10 +238,7 @@ public final class VKPinCodeView: UIView {
         let char: String = String(text[charIndex])
         activeLabel.text = char
         if isSecureTextEntry {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                activeLabel.text = nil
-              activeLabel.layer.backgroundColor = UIColor.white.cgColor
-            }
+            activeLabel.text = ""
         }
         _code += char
 

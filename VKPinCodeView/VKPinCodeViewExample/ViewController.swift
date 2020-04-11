@@ -40,13 +40,16 @@ class ViewController: UIViewController {
 
         firstPinView.validator = validator(_:)
 
+        secondPinView.isSecureTextEntry = true
+        secondPinView.resetAfterError = .onUserInteraction
         secondPinView.onSettingStyle = {
 
             BorderStyle(
                 textColor: .white,
                 borderWidth: 2,
                 backgroundColor: .clear,
-                selectedBackgroundColor: UIColor(named: "selection")!)
+                selectedBackgroundColor: UIColor(named: "selection")!,
+                lockedBackgroundColor: UIColor.lightGray)
         }
 
         secondPinView.onComplete = { code, pinView in

@@ -12,7 +12,6 @@ import UIKit
 public extension EntryViewStyle {
 
     func animateSelection(keyPath: String, values: [Any]) -> CAKeyframeAnimation {
-
         let animation = CAKeyframeAnimation(keyPath: keyPath)
         animation.duration = 1.0
         animation.repeatCount = Float.greatestFiniteMagnitude
@@ -20,4 +19,5 @@ public extension EntryViewStyle {
         animation.values = values
         return animation
     }
+  
 }
