@@ -240,7 +240,7 @@ public final class VKPinCodeView: UIView {
         if isSecureTextEntry {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 activeLabel.text = nil
-                activeLabel.layer.backgroundColor = UIColor.white
+              activeLabel.layer.backgroundColor = UIColor.white.cgColor
             }
         }
         _code += char
