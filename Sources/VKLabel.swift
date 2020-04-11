@@ -23,7 +23,9 @@ public class VKLabel: UILabel {
 
     /// Enable or disable selection for displaying error state.
     public var isError = false {
-        didSet {  updateErrorState() }
+        didSet {
+            updateErrorState()
+        }
     }
 
     // MARK: - Initializers

@@ -23,7 +23,7 @@ public final class VKPinCodeView: UIView {
 
     private lazy var _textField = UITextField(frame: bounds)
 
-    private var _code = "" {
+    private(set) var _code = "" {
         didSet { onCodeDidChange?(_code) }
     }
 
@@ -79,7 +79,9 @@ public final class VKPinCodeView: UIView {
 
     /// Fires every time when a label is ready to set a style
     public var onSettingStyle: (() -> EntryViewStyle)? {
-        didSet { createLabels() }
+        didSet {
+            createLabels()
+        }
     }
 
     public var isEnabled: Bool = true {
@@ -210,10 +212,11 @@ public final class VKPinCodeView: UIView {
             return
         }
 
-        guard let previous: UILabel = _stack.arrangedSubviews[text.count] as? UILabel else {
+        guard let previous: VKLabel = _stack.arrangedSubviews[text.count] as? VKLabel else {
             return
         }
 
+        onSettingStyle?().onSetStyle(activeLabel)
         previous.text = ""
         _code = text
 
@@ -227,7 +230,7 @@ public final class VKPinCodeView: UIView {
 
         let index: Int = text.count - 1
 
-        guard let activeLabel: UILabel = _stack.arrangedSubviews[index] as? UILabel else {
+        guard let activeLabel: VKLabel = _stack.arrangedSubviews[index] as? VKLabel else {
             return
         }
 
@@ -238,7 +241,7 @@ public final class VKPinCodeView: UIView {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 //                activeLabel.text = "\u{2022}"
                 activeLabel.text = nil
-                activeLabel.backgroundColor = UIColor.white
+                activeLabel.layer.backgroundColor = _backgroundColor.cgColor
             }
         }
         _code += char
