@@ -144,7 +144,12 @@ public final class VKPinCodeView: UIView {
     public func resetCode() {
         self.code = ""
         self.textField.text = nil
-        self.stack.arrangedSubviews.forEach({ ($0 as? VKLabel)?.text = nil })
+        self.stack.arrangedSubviews.forEach {
+          if let label: VKLabel = $0 as? VKLabel {
+              label.text = nil
+              label.setStyle(self.onSettingStyle?())
+          }
+        }
         isError = false
     }
 
