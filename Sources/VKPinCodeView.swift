@@ -220,12 +220,15 @@ public final class VKPinCodeView: UIView {
             return
         }
 
-        guard let previous: VKLabel = _stack.arrangedSubviews[text.count] as? VKLabel else {
+        guard let previousLabel: VKLabel = _stack.arrangedSubviews[text.count] as? VKLabel else {
             return
         }
 
-        onSettingStyle?().onSetStyle(previous)
-        previous.text = nil
+        onSettingStyle?().onSetStyle(previousLabel)
+        previousLabel.text = ""
+        if isSecureTextEntry {
+            previousLabel.isLocked = false
+        }
         _code = text
 
     }
@@ -246,7 +249,7 @@ public final class VKPinCodeView: UIView {
         let char: String = String(text[charIndex])
         activeLabel.text = char
         if isSecureTextEntry {
-            activeLabel.text = ""
+            activeLabel.isLocked = true
         }
         _code += char
 

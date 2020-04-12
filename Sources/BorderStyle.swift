@@ -83,6 +83,7 @@ public final class BorderStyle: EntryViewStyle {
 
             layer.borderColor = selectedBorderColor.cgColor
             layer.backgroundColor = selectedBackgroundColor.cgColor
+            label.textColor = textColor
 
             if label.animateWhileSelected {
 
@@ -101,7 +102,8 @@ public final class BorderStyle: EntryViewStyle {
 
         layer.removeAllAnimations()
         layer.borderColor = borderColor.cgColor
-        if label.text == "" {
+        if label.isLocked {
+            label.textColor = self.lockedBackgroundColor
             layer.backgroundColor = self.lockedBackgroundColor.cgColor
             return
         }
@@ -117,11 +119,12 @@ public final class BorderStyle: EntryViewStyle {
             return
         }
         label.layer.borderColor = borderColor.cgColor
-        label.textColor = textColor
-        if label.text == "" {
+        if label.isLocked {
+            label.textColor = self.lockedBackgroundColor
             label.layer.backgroundColor = self.lockedBackgroundColor.cgColor
             return
         }
+        label.textColor = textColor
         label.layer.backgroundColor = backgroundColor.cgColor
     }
 

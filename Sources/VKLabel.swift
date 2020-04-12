@@ -18,13 +18,25 @@ public class VKLabel: UILabel {
 
     /// Enable or disable selection for displaying active state.
     public var isSelected = false {
-        didSet { if oldValue != isSelected { updateSelectedState() } }
+        didSet {
+            if oldValue != isSelected {
+                updateSelectedState()
+            }
+        }
     }
 
     /// Enable or disable selection for displaying error state.
     public var isError = false {
         didSet {
             updateErrorState()
+        }
+    }
+
+    public var isLocked = false {
+        didSet {
+            if oldValue != isLocked {
+                updateSelectedState()
+            }
         }
     }
 
