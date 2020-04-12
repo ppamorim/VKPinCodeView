@@ -23,7 +23,7 @@ public final class VKPinCodeView: UIView {
 
     private lazy var textField = UITextField(frame: bounds)
 
-    private(set) var code = "" {
+    private(set) public var code = "" {
         didSet { onCodeDidChange?(self.code, self) }
     }
 
