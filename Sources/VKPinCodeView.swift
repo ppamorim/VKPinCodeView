@@ -24,7 +24,7 @@ public final class VKPinCodeView: UIView {
     private lazy var _textField = UITextField(frame: bounds)
 
     private(set) var _code = "" {
-        didSet { onCodeDidChange?(_code) }
+        didSet { onCodeDidChange?(_code, self) }
     }
 
     private var _activeIndex: Int {
@@ -68,10 +68,10 @@ public final class VKPinCodeView: UIView {
     public var onComplete: ((_ code: String, _ pinView: VKPinCodeView) -> Void)?
 
     /// Fires after an each char has been entered.
-    public var onCodeDidChange: ((_ code: String) -> Void)?
+    public var onCodeDidChange: ((_ code: String, _ pinView: VKPinCodeView) -> Void)?
 
     /// Fires after begin editing.
-    public var onBeginEditing: (() -> Void)?
+    public var onBeginEditing: ((_ pinView: VKPinCodeView) -> Void)?
 
     /// Vadation closure. Use it as soon as you need to validate a text input which is different from a digits.
     /// You don't need this by default.
@@ -293,7 +293,7 @@ public final class VKPinCodeView: UIView {
 extension VKPinCodeView: UITextFieldDelegate {
 
     public func textFieldDidBeginEditing(_ textField: UITextField) {
-        onBeginEditing?()
+        onBeginEditing?(self)
         handleErrorStateOnBeginEditing()
     }
 
