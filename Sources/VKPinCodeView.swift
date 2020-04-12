@@ -96,6 +96,14 @@ public final class VKPinCodeView: UIView {
         }
     }
 
+    deinit {
+        onComplete = nil
+        onCodeDidChange = nil
+        onBeginEditing = nil
+        validator = nil
+        onSettingStyle = nil
+    }
+
     // MARK: - Initializers
 
     public convenience init() {
