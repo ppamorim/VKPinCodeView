@@ -19,19 +19,19 @@ private enum InterfaceLayoutDirection {
 /// You can use it in storyboards, nib files or right in code.
 public final class VKPinCodeView: UIView {
 
-    private lazy var _stack = UIStackView(frame: bounds)
+    private lazy var stack = UIStackView(frame: bounds)
 
-    private lazy var _textField = UITextField(frame: bounds)
+    private lazy var textField = UITextField(frame: bounds)
 
-    private(set) var _code = "" {
-        didSet { onCodeDidChange?(_code, self) }
+    private(set) var code = "" {
+        didSet { onCodeDidChange?(self.code, self) }
     }
 
-    private var _activeIndex: Int {
-        return _code.count == 0 ? 0 : _code.count - 1
+    private var activeIndex: Int {
+        return self.code.count == 0 ? 0 : self.code.count - 1
     }
 
-    private var _layoutDirection: InterfaceLayoutDirection = .ltr
+    private var layoutDirection: InterfaceLayoutDirection = .ltr
 
     /// Enable or disable the error mode. Default value is false.
     public var isError = false {
@@ -45,12 +45,12 @@ public final class VKPinCodeView: UIView {
 
     /// Spacing between input items.
     public var spacing: CGFloat = 16 {
-        willSet { if newValue != spacing { _stack.spacing = newValue } }
+        willSet { if newValue != spacing { self.stack.spacing = newValue } }
     }
 
     /// Setup a keaboard type. Default value is numberPad.
     public var keyBoardType = UIKeyboardType.numberPad {
-        willSet { _textField.keyboardType = newValue }
+        willSet { self.textField.keyboardType = newValue }
     }
 
     /// Enable or disable selection animation for active input item. Default value is true.
@@ -142,14 +142,14 @@ public final class VKPinCodeView: UIView {
 
     /// Use this method to reset the code
     public func resetCode() {
-        _code = ""
-        _textField.text = nil
-        _stack.arrangedSubviews.forEach({ ($0 as? VKLabel)?.text = nil })
+        self.code = ""
+        self.textField.text = nil
+        self.stack.arrangedSubviews.forEach({ ($0 as? VKLabel)?.text = nil })
         isError = false
     }
 
     public func closeKeyboard() {
-        _textField.resignFirstResponder()
+        self.textField.resignFirstResponder()
     }
 
     // MARK: Private methods
@@ -160,32 +160,32 @@ public final class VKPinCodeView: UIView {
         setupStackView()
 
         if UIView.userInterfaceLayoutDirection(for: semanticContentAttribute) == .rightToLeft {
-            _layoutDirection = .rtl
+            self.layoutDirection = .rtl
         }
 
         createLabels()
     }
 
     private func setupStackView() {
-        _stack.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        _stack.alignment = .fill
-        _stack.axis = .horizontal
-        _stack.distribution = .fillEqually
-        _stack.spacing = spacing
-        addSubview(_stack)
+        self.stack.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        self.stack.alignment = .fill
+        self.stack.axis = .horizontal
+        self.stack.distribution = .fillEqually
+        self.stack.spacing = spacing
+        addSubview(self.stack)
     }
 
     private func setupTextField() {
 
-        _textField.keyboardType = keyBoardType
-        _textField.isHidden = true
-        _textField.delegate = self
-        _textField.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        _textField.addTarget(self, action: #selector(self.onTextChanged(_:)), for: .editingChanged)
+        self.textField.keyboardType = keyBoardType
+        self.textField.isHidden = true
+        self.textField.delegate = self
+        self.textField.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        self.textField.addTarget(self, action: #selector(self.onTextChanged(_:)), for: .editingChanged)
 
-        if #available(iOS 12.0, *) { _textField.textContentType = .oneTimeCode }
+        if #available(iOS 12.0, *) { self.textField.textContentType = .oneTimeCode }
 
-        addSubview(_textField)
+        addSubview(self.textField)
     }
 
     @objc private func onTextChanged(_ sender: UITextField) {
@@ -194,33 +194,33 @@ public final class VKPinCodeView: UIView {
             return
         }
 
-        if _code.count > text.count {
+        if self.code.count > text.count {
             deleteChar(text)
-            var index: Int = _code.count - 1
+            var index: Int = self.code.count - 1
             if index < 0 { index = 0 }
             highlightActiveLabel(index)
         } else {
             appendChar(text)
-            let index: Int = _code.count - 1
+            let index: Int = self.code.count - 1
             highlightActiveLabel(index)
         }
 
-        if _code.count == length {
+        if self.code.count == length {
             if closeKeyboardOnComplete {
                 closeKeyboard()
             }
-            onComplete?(_code, self)
+            onComplete?(self.code, self)
         }
 
     }
 
     private func deleteChar(_ text: String) {
 
-        if _stack.arrangedSubviews.isEmpty {
+        if self.stack.arrangedSubviews.isEmpty {
             return
         }
 
-        guard let previousLabel: VKLabel = _stack.arrangedSubviews[text.count] as? VKLabel else {
+        guard let previousLabel: VKLabel = self.stack.arrangedSubviews[text.count] as? VKLabel else {
             return
         }
 
@@ -229,7 +229,7 @@ public final class VKPinCodeView: UIView {
         if isSecureTextEntry {
             previousLabel.isLocked = false
         }
-        _code = text
+        self.code = text
 
     }
 
@@ -241,7 +241,7 @@ public final class VKPinCodeView: UIView {
 
         let index: Int = text.count - 1
 
-        guard let activeLabel: VKLabel = _stack.arrangedSubviews[index] as? VKLabel else {
+        guard let activeLabel: VKLabel = self.stack.arrangedSubviews[index] as? VKLabel else {
             return
         }
 
@@ -251,27 +251,27 @@ public final class VKPinCodeView: UIView {
         if isSecureTextEntry {
             activeLabel.isLocked = true
         }
-        _code += char
+        self.code += char
 
     }
 
     private func highlightActiveLabel(_ activeIndex: Int) {
-        for i in 0 ..< _stack.arrangedSubviews.count {
-            if let label: VKLabel = _stack.arrangedSubviews[normalizeIndex(index: i)] as? VKLabel {
+        for i in 0 ..< self.stack.arrangedSubviews.count {
+            if let label: VKLabel = self.stack.arrangedSubviews[normalizeIndex(index: i)] as? VKLabel {
                 label.isSelected = i == normalizeIndex(index: activeIndex)
             }
         }
     }
 
     private func turnOffSelectedLabel() {
-        if let label: VKLabel = _stack.arrangedSubviews[_activeIndex] as? VKLabel {
+        if let label: VKLabel = self.stack.arrangedSubviews[self.activeIndex] as? VKLabel {
             label.isSelected = false
         }
     }
 
     private func createLabels() {
-        _stack.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        for _ in 1 ... length { _stack.addArrangedSubview(VKLabel(onSettingStyle?())) }
+        self.stack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        for _ in 1 ... length { self.stack.addArrangedSubview(VKLabel(onSettingStyle?())) }
     }
 
     private func updateErrorState() {
@@ -279,7 +279,7 @@ public final class VKPinCodeView: UIView {
             turnOffSelectedLabel()
             if shakeOnError { shakeAnimation() }
         }
-        _stack.arrangedSubviews.forEach { ($0 as? VKLabel)?.isError = isError }
+        self.stack.arrangedSubviews.forEach { ($0 as? VKLabel)?.isError = isError }
     }
 
     private func shakeAnimation() {
@@ -292,12 +292,12 @@ public final class VKPinCodeView: UIView {
     }
 
     private func onBecomeActive() {
-        _textField.becomeFirstResponder()
-        highlightActiveLabel(_activeIndex)
+        self.textField.becomeFirstResponder()
+        highlightActiveLabel(self.activeIndex)
     }
 
     private func normalizeIndex(index: Int) -> Int {
-        return _layoutDirection == .ltr ? index : length - 1 - index
+        return self.layoutDirection == .ltr ? index : length - 1 - index
     }
 }
 
@@ -318,7 +318,7 @@ extension VKPinCodeView: UITextFieldDelegate {
         }
 
         if string.isEmpty { return true }
-        return (validator?(string) ?? true) && _code.count < length
+        return (validator?(string) ?? true) && self.code.count < length
     }
 
     public func textFieldDidEndEditing(_ textField: UITextField) {

@@ -19,5 +19,5 @@ public extension EntryViewStyle {
         animation.values = values
         return animation
     }
-  
+
 }
