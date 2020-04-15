@@ -20,4 +20,14 @@ public extension EntryViewStyle {
         return animation
     }
 
+  func animBackground(keyPath: String, value: Any, duration: TimeInterval) -> CAKeyframeAnimation {
+        let animation = CAKeyframeAnimation(keyPath: keyPath)
+        animation.duration = duration
+        animation.repeatCount = 0
+        animation.isRemovedOnCompletion = true
+        animation.timingFunction = CAMediaTimingFunction(name: .linear)
+        animation.values = [value]
+        return animation
+    }
+
 }

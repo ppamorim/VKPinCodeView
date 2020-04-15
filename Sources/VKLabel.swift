@@ -19,6 +19,7 @@ public class VKLabel: UILabel {
     /// Enable or disable selection for displaying active state.
     public var isSelected = false {
         didSet {
+            delayLock = .zero
             if oldValue != isSelected {
                 updateSelectedState()
             }
@@ -28,17 +29,14 @@ public class VKLabel: UILabel {
     /// Enable or disable selection for displaying error state.
     public var isError = false {
         didSet {
+            delayLock = .zero
+            isLocked = false
             updateErrorState()
         }
     }
 
-    public var isLocked = false {
-        didSet {
-            if oldValue != isLocked {
-                updateSelectedState()
-            }
-        }
-    }
+    private var delayLock: TimeInterval = .zero
+    public var isLocked: Bool = false
 
     // MARK: - Initializers
 
@@ -65,6 +63,29 @@ public class VKLabel: UILabel {
     public func setStyle(_ style: EntryViewStyle?) {
         _style = style
         _style?.onSetStyle(self)
+    }
+
+    public func setLocked(_ locked: Bool, _ delay: TimeInterval = .zero) {
+        self.delayLock = delay
+
+        if delayLock == .zero {
+            self.isLocked = locked
+            self.updateSelectedState()
+            return
+        }
+
+        self._style?.onSetStyle(self)
+
+        let lastError: Bool = self.isError
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + delayLock) { [weak self] in
+            guard let self = self,
+              lastError == self.isError else {
+                return
+            }
+            self.isLocked = locked
+            self.updateSelectedState()
+        }
     }
 
     // MARK: - Private methods

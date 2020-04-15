@@ -96,6 +96,8 @@ public final class VKPinCodeView: UIView {
         }
     }
 
+  public var delaySecureTextEntry: TimeInterval = 0.25
+
     deinit {
         onComplete = nil
         onCodeDidChange = nil
@@ -147,6 +149,7 @@ public final class VKPinCodeView: UIView {
         self.stack.arrangedSubviews.forEach {
           if let label: VKLabel = $0 as? VKLabel {
               label.text = nil
+              label.isLocked = false
               label.setStyle(self.onSettingStyle?())
           }
         }
@@ -186,9 +189,14 @@ public final class VKPinCodeView: UIView {
         self.textField.isHidden = true
         self.textField.delegate = self
         self.textField.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        self.textField.addTarget(self, action: #selector(self.onTextChanged(_:)), for: .editingChanged)
+        self.textField.addTarget(
+            self,
+            action: #selector(self.onTextChanged(_:)),
+            for: .editingChanged)
 
-        if #available(iOS 12.0, *) { self.textField.textContentType = .oneTimeCode }
+        if #available(iOS 12.0, *) {
+            self.textField.textContentType = .oneTimeCode
+        }
 
         addSubview(self.textField)
     }
@@ -202,7 +210,9 @@ public final class VKPinCodeView: UIView {
         if self.code.count > text.count {
             deleteChar(text)
             var index: Int = self.code.count - 1
-            if index < 0 { index = 0 }
+            if index < 0 {
+                index = 0
+            }
             highlightActiveLabel(index)
         } else {
             appendChar(text)
@@ -231,9 +241,7 @@ public final class VKPinCodeView: UIView {
 
         onSettingStyle?().onSetStyle(previousLabel)
         previousLabel.text = ""
-        if isSecureTextEntry {
-            previousLabel.isLocked = false
-        }
+        previousLabel.setLocked(false)
         self.code = text
 
     }
@@ -254,22 +262,34 @@ public final class VKPinCodeView: UIView {
         let char: String = String(text[charIndex])
         activeLabel.text = char
         if isSecureTextEntry {
-            activeLabel.isLocked = true
+          activeLabel.setLocked(true, 0.3)
         }
         self.code += char
 
     }
 
     private func highlightActiveLabel(_ activeIndex: Int) {
+
         for i in 0 ..< self.stack.arrangedSubviews.count {
+
             if let label: VKLabel = self.stack.arrangedSubviews[normalizeIndex(index: i)] as? VKLabel {
-                label.isSelected = i == normalizeIndex(index: activeIndex)
+
+              let selected: Bool = i == normalizeIndex(index: activeIndex)
+
+              if selected {
+                label.isLocked = false
+              }
+              label.isSelected = selected
+
             }
+
         }
+
     }
 
     private func turnOffSelectedLabel() {
         if let label: VKLabel = self.stack.arrangedSubviews[self.activeIndex] as? VKLabel {
+            label.isLocked = false
             label.isSelected = false
         }
     }
@@ -282,9 +302,16 @@ public final class VKPinCodeView: UIView {
     private func updateErrorState() {
         if isError {
             turnOffSelectedLabel()
-            if shakeOnError { shakeAnimation() }
+            if shakeOnError {
+                shakeAnimation()
+            }
         }
-        self.stack.arrangedSubviews.forEach { ($0 as? VKLabel)?.isError = isError }
+        self.stack.arrangedSubviews.forEach { view in
+            if let label: VKLabel = view as? VKLabel {
+                label.isLocked = false
+                label.isError = isError
+            }
+        }
     }
 
     private func shakeAnimation() {

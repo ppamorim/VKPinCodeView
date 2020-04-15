@@ -70,6 +70,7 @@ public final class BorderStyle: EntryViewStyle {
         layer.borderWidth = borderWidth
         layer.backgroundColor = backgroundColor.cgColor
 
+        layer.removeAllAnimations()
         label.textAlignment = .center
         label.font = font
         label.textColor = textColor
@@ -79,7 +80,7 @@ public final class BorderStyle: EntryViewStyle {
 
         let layer = label.layer
 
-        if label.isSelected {
+        if label.isSelected && !label.isLocked {
 
             layer.borderColor = selectedBorderColor.cgColor
             layer.backgroundColor = selectedBackgroundColor.cgColor
@@ -94,7 +95,9 @@ public final class BorderStyle: EntryViewStyle {
                     borderColor.cgColor
                 ]
 
-                let animation = animateSelection(keyPath: #keyPath(CALayer.borderColor), values: colors)
+                let animation = animateSelection(
+                    keyPath: #keyPath(CALayer.borderColor),
+                    values: colors)
                 layer.add(animation, forKey: "borderColorAnimation")
             }
             return
@@ -102,11 +105,30 @@ public final class BorderStyle: EntryViewStyle {
 
         layer.removeAllAnimations()
         layer.borderColor = borderColor.cgColor
+
         if label.isLocked {
+          
             label.textColor = self.lockedBackgroundColor
             layer.backgroundColor = self.lockedBackgroundColor.cgColor
+
+            let animation = self.animBackground(
+                keyPath: #keyPath(CALayer.backgroundColor),
+                value: self.lockedBackgroundColor,
+                duration: 0.1)
+            layer.add(animation, forKey: "backgroundColorAnimation")
+
+            UIView.transition(
+                with: label,
+                duration: 0.1,
+                options: .transitionCrossDissolve,
+                animations: {
+                    label.textColor = self.lockedBackgroundColor
+                }, completion: nil)
+
             return
         }
+
+        label.textColor = textColor
         layer.backgroundColor = backgroundColor.cgColor
     }
 
