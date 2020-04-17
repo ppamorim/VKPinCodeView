@@ -114,12 +114,12 @@ public final class BorderStyle: EntryViewStyle {
             let animation = self.animBackground(
                 keyPath: #keyPath(CALayer.backgroundColor),
                 value: self.lockedBackgroundColor,
-                duration: 0.1)
+                duration: 0.07)
             layer.add(animation, forKey: "backgroundColorAnimation")
 
             UIView.transition(
                 with: label,
-                duration: 0.1,
+                duration: 0.07,
                 options: .transitionCrossDissolve,
                 animations: {
                     label.textColor = self.lockedBackgroundColor
