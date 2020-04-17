@@ -92,11 +92,19 @@ public final class VKPinCodeView: UIView {
 
     public var isSecureTextEntry: Bool = false {
         didSet {
-            resetCode()
+//            resetCode()
         }
     }
 
-  public var delaySecureTextEntry: TimeInterval = 0.25
+    public var delaySecureTextEntry: TimeInterval = 0.25
+
+    public var isClearEnabled: Bool = true {
+        didSet {
+          self.textField.clearButtonMode = isClearEnabled ? .always : .never
+        }
+    }
+
+    public var editingDelay: TimeInterval = .zero
 
     deinit {
         onComplete = nil
@@ -261,9 +269,11 @@ public final class VKPinCodeView: UIView {
         let charIndex: String.Index = text.index(text.startIndex, offsetBy: index)
         let char: String = String(text[charIndex])
         activeLabel.text = char
+
         if isSecureTextEntry {
-          activeLabel.setLocked(true, 0.3)
+            activeLabel.setLocked(true, 0.3)
         }
+
         self.code += char
 
     }
@@ -274,12 +284,16 @@ public final class VKPinCodeView: UIView {
 
             if let label: VKLabel = self.stack.arrangedSubviews[normalizeIndex(index: i)] as? VKLabel {
 
-              let selected: Bool = i == normalizeIndex(index: activeIndex)
+                let normalized: Int = normalizeIndex(index: activeIndex)
+                let selected: Bool = i == normalized
 
-              if selected {
-                label.isLocked = false
-              }
-              label.isSelected = selected
+                if selected {
+                    label.isLocked = false
+                } else if i <= normalized {
+                    label.isLocked = true
+                }
+
+                label.isSelected = i == normalized
 
             }
 
@@ -288,8 +302,16 @@ public final class VKPinCodeView: UIView {
     }
 
     private func turnOffSelectedLabel() {
+
+        if isSecureTextEntry {
+          for i in 0...self.activeIndex {
+                if let label: VKLabel = self.stack.arrangedSubviews[normalizeIndex(index: i)] as? VKLabel {
+                    label.isLocked = true
+                }
+            }
+        }
+
         if let label: VKLabel = self.stack.arrangedSubviews[self.activeIndex] as? VKLabel {
-            label.isLocked = false
             label.isSelected = false
         }
     }
@@ -335,6 +357,10 @@ public final class VKPinCodeView: UIView {
 
 extension VKPinCodeView: UITextFieldDelegate {
 
+    public func textFieldShouldClear(_ textField: UITextField) -> Bool {
+        isClearEnabled
+    }
+
     public func textFieldDidBeginEditing(_ textField: UITextField) {
         onBeginEditing?(self)
         handleErrorStateOnBeginEditing()
@@ -347,6 +373,10 @@ extension VKPinCodeView: UITextFieldDelegate {
 
         if !isEnabled {
             return false
+        }
+
+        if editingDelay != .zero {
+            Thread.sleep(forTimeInterval: editingDelay)
         }
 
         if string.isEmpty { return true }

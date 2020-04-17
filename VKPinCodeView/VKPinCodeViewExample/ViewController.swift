@@ -34,16 +34,16 @@ class ViewController: UIViewController {
     private func setupPinViews() {
 
         firstPinView.onSettingStyle = {
-
             UnderlineStyle(textColor: .white, lineColor: .white, lineWidth: 2)
         }
 
         firstPinView.validator = validator(_:)
 
         secondPinView.isSecureTextEntry = true
+        secondPinView.isClearEnabled = false
+        secondPinView.editingDelay = 0.1
         secondPinView.resetAfterError = .onUserInteraction
         secondPinView.onSettingStyle = {
-
             BorderStyle(
                 textColor: .white,
                 borderWidth: 2,
@@ -53,7 +53,6 @@ class ViewController: UIViewController {
         }
 
         secondPinView.onComplete = { code, pinView in
-
             if code != "1111" { pinView.isError = true }
         }
 

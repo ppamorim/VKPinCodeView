@@ -107,7 +107,7 @@ public final class BorderStyle: EntryViewStyle {
         layer.borderColor = borderColor.cgColor
 
         if label.isLocked {
-          
+
             label.textColor = self.lockedBackgroundColor
             layer.backgroundColor = self.lockedBackgroundColor.cgColor
 

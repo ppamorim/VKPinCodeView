@@ -66,21 +66,21 @@ public class VKLabel: UILabel {
     }
 
     public func setLocked(_ locked: Bool, _ delay: TimeInterval = .zero) {
-        self.delayLock = delay
 
-        if delayLock == .zero {
+        if !locked {
             self.isLocked = locked
             self.updateSelectedState()
             return
         }
 
-        self._style?.onSetStyle(self)
+        self.delayLock = delay
 
         let lastError: Bool = self.isError
 
         DispatchQueue.main.asyncAfter(deadline: .now() + delayLock) { [weak self] in
             guard let self = self,
-              lastError == self.isError else {
+              lastError == self.isError,
+              self.text?.isEmpty != true else {
                 return
             }
             self.isLocked = locked
