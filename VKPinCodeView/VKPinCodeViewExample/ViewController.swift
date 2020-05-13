@@ -39,7 +39,7 @@ class ViewController: UIViewController {
 
         firstPinView.validator = validator(_:)
 
-        secondPinView.isSecureTextEntry = false
+        secondPinView.isSecureTextEntry = true
         secondPinView.isClearEnabled = false
         secondPinView.editingDelay = 0.1
         secondPinView.resetAfterError = .onUserInteraction

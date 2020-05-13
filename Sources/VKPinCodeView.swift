@@ -289,10 +289,9 @@ public final class VKPinCodeView: UIView {
                 let normalized: Int = normalizeIndex(index: activeIndex)
                 let selected: Bool = i == normalized
 
-//                if isSecureTextEntry {
-                  print("i < normalized \(i <= normalized)")
+                if isSecureTextEntry && !selected {
                     label.isLocked = i <= normalized
-//                }
+                }
 
                 label.isSelected = selected
 
