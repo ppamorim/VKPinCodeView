@@ -15,18 +15,21 @@ public extension EntryViewStyle {
         let animation = CAKeyframeAnimation(keyPath: keyPath)
         animation.duration = 1.0
         animation.repeatCount = Float.greatestFiniteMagnitude
+        animation.isRemovedOnCompletion = true
+        animation.fillMode = .forwards
         animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
         animation.values = values
         return animation
     }
 
-  func animBackground(keyPath: String, value: Any, duration: TimeInterval) -> CAKeyframeAnimation {
-        let animation = CAKeyframeAnimation(keyPath: keyPath)
+    func animBackground(keyPath: String, value: Any, duration: TimeInterval) -> CABasicAnimation {
+        let animation = CABasicAnimation(keyPath: keyPath)
         animation.duration = duration
         animation.repeatCount = 0
         animation.isRemovedOnCompletion = true
+        animation.fillMode = .forwards
         animation.timingFunction = CAMediaTimingFunction(name: .linear)
-        animation.values = [value]
+        animation.toValue = value
         return animation
     }
 

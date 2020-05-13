@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import QuartzCore
 
 public final class BorderStyle: EntryViewStyle {
 
@@ -64,42 +65,49 @@ public final class BorderStyle: EntryViewStyle {
 
     public func onSetStyle(_ label: VKLabel) {
 
-        let layer = label.layer
+        let layer: CALayer = label.layer
+        layer.removeAllAnimations()
+
         layer.cornerRadius = cornerRadius
         layer.borderColor = borderColor.cgColor
         layer.borderWidth = borderWidth
         layer.backgroundColor = backgroundColor.cgColor
 
-        layer.removeAllAnimations()
         label.textAlignment = .center
         label.font = font
         label.textColor = textColor
+
+        layer.setNeedsDisplay()
+        layer.display()
+
     }
 
     public func onUpdateSelectedState(_ label: VKLabel) {
 
-        let layer = label.layer
+        let layer: CALayer = label.layer
 
         if label.isSelected && !label.isLocked {
 
+            layer.removeAllAnimations()
             layer.borderColor = selectedBorderColor.cgColor
             layer.backgroundColor = selectedBackgroundColor.cgColor
             label.textColor = textColor
 
             if label.animateWhileSelected {
 
-                let colors = [
+                let colors: [CGColor] = [
                     borderColor.cgColor,
                     selectedBorderColor.cgColor,
                     selectedBorderColor.cgColor,
                     borderColor.cgColor
                 ]
 
-                let animation = animateSelection(
+                let animation: CAKeyframeAnimation = self.animateSelection(
                     keyPath: #keyPath(CALayer.borderColor),
                     values: colors)
                 layer.add(animation, forKey: "borderColorAnimation")
             }
+
             return
         }
 
@@ -111,11 +119,13 @@ public final class BorderStyle: EntryViewStyle {
             label.textColor = self.lockedBackgroundColor
             layer.backgroundColor = self.lockedBackgroundColor.cgColor
 
-            let animation = self.animBackground(
-                keyPath: #keyPath(CALayer.backgroundColor),
-                value: self.lockedBackgroundColor,
-                duration: 0.07)
-            layer.add(animation, forKey: "backgroundColorAnimation")
+            if #available(iOS 13.0, *) {
+                let animation: CABasicAnimation = self.animBackground(
+                    keyPath: #keyPath(CALayer.backgroundColor),
+                    value: self.lockedBackgroundColor,
+                    duration: 0.07)
+                layer.add(animation, forKey: "backgroundColorAnimation")
+            }
 
             UIView.transition(
                 with: label,

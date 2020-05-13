@@ -90,17 +90,13 @@ public final class VKPinCodeView: UIView {
         }
     }
 
-    public var isSecureTextEntry: Bool = false {
-        didSet {
-//            resetCode()
-        }
-    }
+    public var isSecureTextEntry: Bool = false
 
     public var delaySecureTextEntry: TimeInterval = 0.25
 
     public var isClearEnabled: Bool = true {
         didSet {
-          self.textField.clearButtonMode = isClearEnabled ? .always : .never
+            self.textField.clearButtonMode = isClearEnabled ? .always : .never
         }
     }
 
@@ -155,11 +151,11 @@ public final class VKPinCodeView: UIView {
         self.code = ""
         self.textField.text = nil
         self.stack.arrangedSubviews.forEach {
-          if let label: VKLabel = $0 as? VKLabel {
-              label.text = nil
-              label.isLocked = false
-              label.setStyle(self.onSettingStyle?())
-          }
+            if let label: VKLabel = $0 as? VKLabel {
+                label.text = nil
+                label.isLocked = false
+                label.setStyle(self.onSettingStyle?())
+            }
         }
         isError = false
     }
@@ -225,7 +221,9 @@ public final class VKPinCodeView: UIView {
         } else {
             appendChar(text)
             let index: Int = self.code.count - 1
-            highlightActiveLabel(index)
+            if index >= 0 {
+                highlightActiveLabel(index)
+            }
         }
 
         if self.code.count == length {
@@ -249,7 +247,9 @@ public final class VKPinCodeView: UIView {
 
         onSettingStyle?().onSetStyle(previousLabel)
         previousLabel.text = ""
-        previousLabel.setLocked(false)
+        if isSecureTextEntry {
+            previousLabel.lockDelay(false)
+        }
         self.code = text
 
     }
@@ -271,8 +271,10 @@ public final class VKPinCodeView: UIView {
         activeLabel.text = char
 
         if isSecureTextEntry {
-            activeLabel.setLocked(true, 0.3)
+            activeLabel.lockDelay(true, 0.3)
         }
+
+        activeLabel.layoutIfNeeded()
 
         self.code += char
 
@@ -280,20 +282,21 @@ public final class VKPinCodeView: UIView {
 
     private func highlightActiveLabel(_ activeIndex: Int) {
 
-        for i in 0 ..< self.stack.arrangedSubviews.count {
+        for i in 0..<self.stack.arrangedSubviews.count {
 
             if let label: VKLabel = self.stack.arrangedSubviews[normalizeIndex(index: i)] as? VKLabel {
 
                 let normalized: Int = normalizeIndex(index: activeIndex)
                 let selected: Bool = i == normalized
 
-                if selected {
-                    label.isLocked = false
-                } else if i <= normalized {
-                    label.isLocked = true
-                }
+//                if isSecureTextEntry {
+                  print("i < normalized \(i <= normalized)")
+                    label.isLocked = i <= normalized
+//                }
 
-                label.isSelected = i == normalized
+                label.isSelected = selected
+
+                label.layoutIfNeeded()
 
             }
 

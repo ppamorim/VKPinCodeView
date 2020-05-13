@@ -39,16 +39,25 @@ class ViewController: UIViewController {
 
         firstPinView.validator = validator(_:)
 
-        secondPinView.isSecureTextEntry = true
+        secondPinView.isSecureTextEntry = false
         secondPinView.isClearEnabled = false
         secondPinView.editingDelay = 0.1
         secondPinView.resetAfterError = .onUserInteraction
+
+        let selectedBackgroundColor: UIColor
+        if #available(iOS 11.0, *) {
+            selectedBackgroundColor = UIColor(named: "selection")!
+        } else {
+            selectedBackgroundColor = UIColor.black
+        }
+
         secondPinView.onSettingStyle = {
             BorderStyle(
+                font: UIFont.systemFont(ofSize: 18),
                 textColor: .white,
                 borderWidth: 2,
                 backgroundColor: .clear,
-                selectedBackgroundColor: UIColor(named: "selection")!,
+                selectedBackgroundColor: selectedBackgroundColor,
                 lockedBackgroundColor: UIColor.lightGray)
         }
 

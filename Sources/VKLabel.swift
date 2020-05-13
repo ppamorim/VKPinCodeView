@@ -65,7 +65,7 @@ public class VKLabel: UILabel {
         _style?.onSetStyle(self)
     }
 
-    public func setLocked(_ locked: Bool, _ delay: TimeInterval = .zero) {
+    public func lockDelay(_ locked: Bool, _ delay: TimeInterval = .zero) {
 
         if !locked {
             self.isLocked = locked
