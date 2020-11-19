@@ -8,15 +8,14 @@
 
 import UIKit
 
-/// Vadation closure. Use it as soon as you need to validate input text which is different from digits.
+/// Validation closure. Use it as soon as you need to validate input text which is different from digits.
 public typealias PinCodeValidator = (_ code: String) -> Bool
 
 private enum InterfaceLayoutDirection {
     case ltr, rtl
 }
 
-/// Main container with PIN input items.
-/// You can use it in storyboards, nib files or right in code.
+/// Main container with PIN input items. You can use it in storyboards, nib files or right in the code.
 public final class VKPinCodeView: UIView {
 
     private lazy var stack = UIStackView(frame: bounds)
@@ -33,7 +32,7 @@ public final class VKPinCodeView: UIView {
 
     private var layoutDirection: InterfaceLayoutDirection = .ltr
 
-    /// Enable or disable the error mode. Default value is false.
+    /// Enable or disable error mode. Default value is false.
     public var isError = false {
         didSet { if oldValue != isError { updateErrorState() } }
     }
@@ -48,11 +47,23 @@ public final class VKPinCodeView: UIView {
         willSet { if newValue != spacing { self.stack.spacing = newValue } }
     }
 
-    /// Setup a keaboard type. Default value is numberPad.
+    /// Setup a keyboard type. Default value is numberPad.
     public var keyBoardType = UIKeyboardType.numberPad {
         willSet { self.textField.keyboardType = newValue }
     }
-
+    
+    /// Setup a keyboard appearence. Default value is light.
+    public var keyBoardAppearance = UIKeyboardAppearance.light {
+        
+        willSet { self.textField.keyboardAppearance = newValue }
+    }
+    
+    /// Setup autocapitalization. Default value is none.
+    public var autocapitalizationType = UITextAutocapitalizationType.none {
+        
+        willSet { self.textField.autocapitalizationType = newValue }
+    }
+    
     /// Enable or disable selection animation for active input item. Default value is true.
     public var animateSelectedInputItem = true
 
@@ -77,7 +88,7 @@ public final class VKPinCodeView: UIView {
     /// You don't need this by default.
     public var validator: PinCodeValidator?
 
-    /// Fires every time when a label is ready to set a style
+    /// Fires every time when the label is ready to set the style.
     public var onSettingStyle: (() -> EntryViewStyle)? {
         didSet {
             createLabels()
@@ -190,6 +201,8 @@ public final class VKPinCodeView: UIView {
     private func setupTextField() {
 
         self.textField.keyboardType = keyBoardType
+        self.textField.autocapitalizationType = autocapitalizationType
+        self.textField.keyboardAppearance = keyBoardAppearance
         self.textField.isHidden = true
         self.textField.delegate = self
         self.textField.autoresizingMask = [.flexibleWidth, .flexibleHeight]
