@@ -18,9 +18,17 @@ private enum InterfaceLayoutDirection {
 /// Main container with PIN input items. You can use it in storyboards, nib files or right in the code.
 public final class VKPinCodeView: UIView {
 
-    private lazy var stack = UIStackView(frame: bounds)
+    private lazy var stack: UIStackView = {
+        let view = UIStackView(frame: bounds)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
 
-    private lazy var textField = UITextField(frame: bounds)
+    private lazy var textField: UITextField = {
+        let view = UITextField(frame: bounds)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
 
     private(set) public var code = "" {
         didSet { onCodeDidChange?(self.code, self) }
@@ -196,6 +204,11 @@ public final class VKPinCodeView: UIView {
         self.stack.distribution = .fillEqually
         self.stack.spacing = spacing
         addSubview(self.stack)
+
+        self.addConstraint(NSLayoutConstraint(item: self.stack, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1.0, constant: 0.0))
+        self.addConstraint(NSLayoutConstraint(item: self.stack, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1.0, constant: 0.0))
+        self.addConstraint(NSLayoutConstraint(item: self.stack, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1.0, constant: 0.0))
+        self.addConstraint(NSLayoutConstraint(item: self.stack, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant: 0.0))
     }
 
     private func setupTextField() {
@@ -216,6 +229,12 @@ public final class VKPinCodeView: UIView {
         }
 
         addSubview(self.textField)
+
+        self.addConstraint(NSLayoutConstraint(item: self.textField, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1.0, constant: 0.0))
+        self.addConstraint(NSLayoutConstraint(item: self.textField, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1.0, constant: 0.0))
+        self.addConstraint(NSLayoutConstraint(item: self.textField, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1.0, constant: 0.0))
+        self.addConstraint(NSLayoutConstraint(item: self.textField, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant: 0.0))
+
     }
 
     @objc private func onTextChanged(_ sender: UITextField) {
