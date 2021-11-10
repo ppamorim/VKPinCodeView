@@ -16,7 +16,7 @@ private enum InterfaceLayoutDirection {
 }
 
 /// Main container with PIN input items. You can use it in storyboards, nib files or right in the code.
-public final class VKPinCodeView: UIView {
+public class VKPinCodeView: UIView, UITextInputTraits {
 
     private lazy var stack: UIStackView = {
         let view = UIStackView(frame: bounds)
@@ -27,6 +27,7 @@ public final class VKPinCodeView: UIView {
     private lazy var textField: UITextField = {
         let view = UITextField(frame: bounds)
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.textContentType = textContentType
         return view
     }()
 
@@ -70,6 +71,12 @@ public final class VKPinCodeView: UIView {
     public var autocapitalizationType = UITextAutocapitalizationType.none {
         
         willSet { self.textField.autocapitalizationType = newValue }
+    }
+  
+    public var textContentType: UITextContentType! = .none {
+        didSet {
+            textField.textContentType = textContentType
+        }
     }
     
     /// Enable or disable selection animation for active input item. Default value is true.
