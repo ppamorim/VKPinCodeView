@@ -27,7 +27,9 @@ public class VKPinCodeView: UIView, UITextInputTraits {
     private lazy var textField: UITextField = {
         let view = UITextField(frame: bounds)
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.textContentType = textContentType
+        if #available(iOS 10.0, *) {
+            view.textContentType = textContentType
+        }
         return view
     }()
 
@@ -73,6 +75,7 @@ public class VKPinCodeView: UIView, UITextInputTraits {
         willSet { self.textField.autocapitalizationType = newValue }
     }
   
+    @available(iOS 10.0, *)
     public var textContentType: UITextContentType! = .none {
         didSet {
             textField.textContentType = textContentType
