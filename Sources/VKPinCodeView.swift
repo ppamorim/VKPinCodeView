@@ -75,10 +75,11 @@ public class VKPinCodeView: UIView, UITextInputTraits {
         willSet { self.textField.autocapitalizationType = newValue }
     }
   
-    @available(iOS 10.0, *)
     public var textContentType: UITextContentType! = .none {
         didSet {
-            textField.textContentType = textContentType
+            if #available(iOS 10.0, *) {
+                textField.textContentType = textContentType
+            }
         }
     }
     
