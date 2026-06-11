@@ -3,6 +3,7 @@
 //  VKPinCodeView
 //
 //  Created by Vladimir Kokhanevich on 25.11.19.
+//  Modified by Pedro Paulo de Amorim.
 //  Copyright © 2019 Vladimir Kokhanevich. All rights reserved.
 //
 
@@ -10,6 +11,9 @@ import UIKit
 import QuartzCore
 
 public final class BorderStyle: EntryViewStyle {
+
+    private static let borderColorAnimationKey = "borderColorAnimation"
+    private static let backgroundColorAnimationKey = "backgroundColorAnimation"
 
     private var font: UIFont
 
@@ -34,6 +38,26 @@ public final class BorderStyle: EntryViewStyle {
     private var errorBackgroundColor: UIColor
 
     private var lockedBackgroundColor: UIColor
+
+    private lazy var selectionBorderColorValues: [CGColor] = [
+        borderColor.cgColor,
+        selectedBorderColor.cgColor,
+        selectedBorderColor.cgColor,
+        borderColor.cgColor
+    ]
+
+    private lazy var selectionBorderAnimationTemplate: CAKeyframeAnimation = {
+        animateSelection(
+            keyPath: #keyPath(CALayer.borderColor),
+            values: selectionBorderColorValues)
+    }()
+
+    private lazy var lockedBackgroundAnimationTemplate: CABasicAnimation = {
+        animBackground(
+            keyPath: #keyPath(CALayer.backgroundColor),
+            value: lockedBackgroundColor.cgColor,
+            duration: 0.07)
+    }()
 
     public required init(
         font: UIFont = UIFont.systemFont(ofSize: 22),
@@ -64,9 +88,97 @@ public final class BorderStyle: EntryViewStyle {
     }
 
     public func onSetStyle(_ label: VKLabel) {
+        applyBaseStyle(to: label, removeAnimations: true)
+    }
+
+    public func onResetStyle(_ label: VKLabel) {
+        applyBaseStyle(to: label, removeAnimations: true)
+    }
+
+    public func onUpdateSelectedState(_ label: VKLabel) {
 
         let layer: CALayer = label.layer
-        layer.removeAllAnimations()
+
+        if label.isSelected && !label.isLocked {
+
+            layer.removeAnimation(forKey: Self.borderColorAnimationKey)
+            layer.removeAnimation(forKey: Self.backgroundColorAnimationKey)
+            layer.borderColor = selectedBorderColor.cgColor
+            layer.backgroundColor = selectedBackgroundColor.cgColor
+            label.textColor = textColor
+
+            if label.animateWhileSelected {
+                if let animation = selectionBorderAnimationTemplate.copy() as? CAKeyframeAnimation {
+                    layer.add(animation, forKey: Self.borderColorAnimationKey)
+                }
+            }
+
+            return
+        }
+
+        layer.removeAnimation(forKey: Self.borderColorAnimationKey)
+        layer.removeAnimation(forKey: Self.backgroundColorAnimationKey)
+        layer.borderColor = borderColor.cgColor
+
+        if label.isLocked {
+
+            label.textColor = lockedBackgroundColor
+            layer.backgroundColor = lockedBackgroundColor.cgColor
+
+            if #available(iOS 13.0, *) {
+                if let animation = lockedBackgroundAnimationTemplate.copy() as? CABasicAnimation {
+                    layer.add(animation, forKey: Self.backgroundColorAnimationKey)
+                }
+            }
+
+            return
+        }
+
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        label.textColor = textColor
+        layer.backgroundColor = backgroundColor.cgColor
+        CATransaction.commit()
+    }
+
+    public func onUpdateErrorState(_ label: VKLabel) {
+        let layer = label.layer
+        layer.removeAnimation(forKey: Self.borderColorAnimationKey)
+        layer.removeAnimation(forKey: Self.backgroundColorAnimationKey)
+
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+
+        if label.isError {
+            layer.borderColor = errorBorderColor.cgColor
+            layer.backgroundColor = errorBackgroundColor.cgColor
+            label.textColor = errorTextColor
+        } else {
+            layer.borderColor = borderColor.cgColor
+            if label.isLocked {
+                label.textColor = lockedBackgroundColor
+                layer.backgroundColor = lockedBackgroundColor.cgColor
+            } else {
+                label.textColor = textColor
+                layer.backgroundColor = backgroundColor.cgColor
+            }
+        }
+
+        CATransaction.commit()
+    }
+
+    public func onLayoutSubviews(_ label: VKLabel) {}
+
+    private func applyBaseStyle(to label: VKLabel, removeAnimations: Bool) {
+        let layer: CALayer = label.layer
+
+        if removeAnimations {
+            layer.removeAnimation(forKey: Self.borderColorAnimationKey)
+            layer.removeAnimation(forKey: Self.backgroundColorAnimationKey)
+        }
+
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
 
         layer.cornerRadius = cornerRadius
         layer.borderColor = borderColor.cgColor
@@ -77,88 +189,6 @@ public final class BorderStyle: EntryViewStyle {
         label.font = font
         label.textColor = textColor
 
-        layer.setNeedsDisplay()
-        layer.display()
-
+        CATransaction.commit()
     }
-
-    public func onUpdateSelectedState(_ label: VKLabel) {
-
-        let layer: CALayer = label.layer
-
-        if label.isSelected && !label.isLocked {
-
-            layer.removeAllAnimations()
-            layer.borderColor = selectedBorderColor.cgColor
-            layer.backgroundColor = selectedBackgroundColor.cgColor
-            label.textColor = textColor
-
-            if label.animateWhileSelected {
-
-                let colors: [CGColor] = [
-                    borderColor.cgColor,
-                    selectedBorderColor.cgColor,
-                    selectedBorderColor.cgColor,
-                    borderColor.cgColor
-                ]
-
-                let animation: CAKeyframeAnimation = self.animateSelection(
-                    keyPath: #keyPath(CALayer.borderColor),
-                    values: colors)
-                layer.add(animation, forKey: "borderColorAnimation")
-            }
-
-            return
-        }
-
-        layer.removeAllAnimations()
-        layer.borderColor = borderColor.cgColor
-
-        if label.isLocked {
-
-            label.textColor = self.lockedBackgroundColor
-            layer.backgroundColor = self.lockedBackgroundColor.cgColor
-
-            if #available(iOS 13.0, *) {
-                let animation: CABasicAnimation = self.animBackground(
-                    keyPath: #keyPath(CALayer.backgroundColor),
-                    value: self.lockedBackgroundColor,
-                    duration: 0.07)
-                layer.add(animation, forKey: "backgroundColorAnimation")
-            }
-
-            UIView.transition(
-                with: label,
-                duration: 0.07,
-                options: .transitionCrossDissolve,
-                animations: {
-                    label.textColor = self.lockedBackgroundColor
-                }, completion: nil)
-
-            return
-        }
-
-        label.textColor = textColor
-        layer.backgroundColor = backgroundColor.cgColor
-    }
-
-    public func onUpdateErrorState(_ label: VKLabel) {
-        if label.isError {
-            label.layer.removeAllAnimations()
-            label.layer.borderColor = errorBorderColor.cgColor
-            label.layer.backgroundColor = errorBackgroundColor.cgColor
-            label.textColor = errorTextColor
-            return
-        }
-        label.layer.borderColor = borderColor.cgColor
-        if label.isLocked {
-            label.textColor = self.lockedBackgroundColor
-            label.layer.backgroundColor = self.lockedBackgroundColor.cgColor
-            return
-        }
-        label.textColor = textColor
-        label.layer.backgroundColor = backgroundColor.cgColor
-    }
-
-    public func onLayoutSubviews(_ label: VKLabel) {}
 }

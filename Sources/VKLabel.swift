@@ -3,6 +3,7 @@
 //  VKPinCodeView
 //
 //  Created by Vladimir Kokhanevich on 22/02/2019.
+//  Modified by Pedro Paulo de Amorim.
 //  Copyright © 2019 Vladimir Kokhanevich. All rights reserved.
 //
 
@@ -12,6 +13,13 @@ import UIKit
 public class VKLabel: UILabel {
 
     private var _style: EntryViewStyle?
+    private var lockDelayWorkItem: DispatchWorkItem?
+
+    /// Underline layer used by `UnderlineStyle`. Created lazily per label.
+    private(set) var underlineShapeLayer: CAShapeLayer?
+
+    /// Last bounds used when laying out the underline path.
+    var lastUnderlineLayoutBounds: CGRect = .zero
 
     /// Enable or disable selection animation for active input item. Default value is true.
     public var animateWhileSelected = true
@@ -20,6 +28,7 @@ public class VKLabel: UILabel {
     public var isSelected = false {
         didSet {
             delayLock = .zero
+            cancelLockDelay()
             if oldValue != isSelected {
                 updateSelectedState()
             }
@@ -30,6 +39,7 @@ public class VKLabel: UILabel {
     public var isError = false {
         didSet {
             delayLock = .zero
+            cancelLockDelay()
             isLocked = false
             updateErrorState()
         }
@@ -65,7 +75,34 @@ public class VKLabel: UILabel {
         _style?.onSetStyle(self)
     }
 
+    /// Clears visual state using the lighter reset hook when available.
+    public func resetAppearance() {
+        _style?.onResetStyle(self)
+    }
+
+    func underlineLayer() -> CAShapeLayer {
+        if let existing = underlineShapeLayer {
+            return existing
+        }
+        let layer = CAShapeLayer()
+        underlineShapeLayer = layer
+        return layer
+    }
+
     public func lockDelay(_ locked: Bool, _ delay: TimeInterval = .zero) {
+
+        if locked {
+            if delay > 0, lockDelayWorkItem != nil, delayLock == delay, !isLocked {
+                return
+            }
+            if delay == 0, isLocked {
+                return
+            }
+        } else if !isLocked, lockDelayWorkItem == nil {
+            return
+        }
+
+        cancelLockDelay()
 
         if !locked {
             self.isLocked = locked
@@ -77,7 +114,7 @@ public class VKLabel: UILabel {
 
         let lastError: Bool = self.isError
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + delayLock) { [weak self] in
+        let workItem = DispatchWorkItem { [weak self] in
             guard let self = self,
               lastError == self.isError,
               self.text?.isEmpty != true else {
@@ -86,9 +123,17 @@ public class VKLabel: UILabel {
             self.isLocked = locked
             self.updateSelectedState()
         }
+
+        lockDelayWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + delayLock, execute: workItem)
     }
 
     // MARK: - Private methods
+
+    private func cancelLockDelay() {
+        lockDelayWorkItem?.cancel()
+        lockDelayWorkItem = nil
+    }
 
     private func updateSelectedState() {
         _style?.onUpdateSelectedState(self)

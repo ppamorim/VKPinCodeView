@@ -3,6 +3,7 @@
 //  VKPinCodeView
 //
 //  Created by Vladimir Kokhanevich on 25.11.19.
+//  Modified by Pedro Paulo de Amorim.
 //  Copyright © 2019 Vladimir Kokhanevich. All rights reserved.
 //
 
@@ -16,7 +17,6 @@ public extension EntryViewStyle {
         animation.duration = 1.0
         animation.repeatCount = Float.greatestFiniteMagnitude
         animation.isRemovedOnCompletion = true
-        animation.fillMode = .forwards
         animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
         animation.values = values
         return animation

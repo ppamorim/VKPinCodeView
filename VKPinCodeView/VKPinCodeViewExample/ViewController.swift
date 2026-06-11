@@ -33,6 +33,8 @@ class ViewController: UIViewController {
 
     private func setupPinViews() {
 
+        firstPinView.layoutDirection = .rtl
+        firstPinView.inputAccessoryView = getInputAccessoryView()
         firstPinView.onSettingStyle = {
             UnderlineStyle(textColor: .white, lineColor: .white, lineWidth: 2)
         }
@@ -71,5 +73,24 @@ class ViewController: UIViewController {
     private func validator(_ code: String) -> Bool {
 
         return !code.trimmingCharacters(in: CharacterSet.decimalDigits.inverted).isEmpty
+    }
+
+    private func getInputAccessoryView() -> UIView {
+        let size = CGSize(width: view.frame.width, height: .greatestFiniteMagnitude)
+        let frame = CGRect(origin: .zero, size: size)
+        let toolbar = UIToolbar(frame: frame)
+        let toolbarDoneButton = UIBarButtonItem(
+            title: "Done",
+            style: .done,
+            target: self,
+            action: #selector(doneButtonDidTap))
+        toolbar.setItems([toolbarDoneButton], animated: true)
+        toolbar.sizeToFit()
+        return toolbar
+    }
+
+    @objc private func doneButtonDidTap() {
+        print(firstPinView.code)
+        firstPinView.endEditing(true)
     }
 }

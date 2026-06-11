@@ -1,7 +1,7 @@
 Pod::Spec.new do |spec|
 
   spec.name         = "VKPinCodeView"
-  spec.version      = "0.4.4"
+  spec.version      = "0.4.5"
   spec.summary      = "VKPinCodeView is a library written in Swift that provides the easy peasy way to enter code from SMS."
 
   spec.description  = <<-DESC
@@ -12,7 +12,10 @@ Pod::Spec.new do |spec|
   # spec.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
 
   spec.license = "MIT"
-  spec.author = { "Vladimir Kokhanevich" => "vladimir.kokhanevich@gmail.com" }
+  spec.author = {
+    "Vladimir Kokhanevich" => "vladimir.kokhanevich@gmail.com",
+    "Pedro Paulo de Amorim" => "pp.amorim@hotmail.com"
+  }
 
   spec.platform = :ios, "9.0"
 

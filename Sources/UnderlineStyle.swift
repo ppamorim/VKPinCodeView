@@ -3,6 +3,7 @@
 //  VKPinCodeView
 //
 //  Created by Vladimir Kokhanevich on 25.11.19.
+//  Modified by Pedro Paulo de Amorim.
 //  Copyright © 2019 Vladimir Kokhanevich. All rights reserved.
 //
 
@@ -11,7 +12,7 @@ import QuartzCore
 
 public final class UnderlineStyle: EntryViewStyle {
 
-    private var _line = CAShapeLayer()
+    private static let strokeColorAnimationKey = "strokeColorAnimation"
 
     private var _font: UIFont
 
@@ -26,6 +27,19 @@ public final class UnderlineStyle: EntryViewStyle {
     private var _lineWidth: CGFloat
 
     private var _errorLineColor: UIColor
+
+    private lazy var selectionStrokeColorValues: [CGColor] = [
+        _lineColor.cgColor,
+        _selectedLineColor.cgColor,
+        _selectedLineColor.cgColor,
+        _lineColor.cgColor
+    ]
+
+    private lazy var selectionStrokeAnimationTemplate: CAKeyframeAnimation = {
+        animateSelection(
+            keyPath: #keyPath(CAShapeLayer.strokeColor),
+            values: selectionStrokeColorValues)
+    }()
 
     public required init(
         font: UIFont = UIFont.systemFont(ofSize: 22),
@@ -46,60 +60,95 @@ public final class UnderlineStyle: EntryViewStyle {
     }
 
     public func onSetStyle(_ label: VKLabel) {
+        applyBaseStyle(to: label)
+    }
 
-        _line.strokeColor = _lineColor.cgColor
-        _line.lineWidth = _lineWidth
-        label.layer.addSublayer(_line)
+    public func onResetStyle(_ label: VKLabel) {
+        let line = label.underlineLayer()
+        line.removeAnimation(forKey: Self.strokeColorAnimationKey)
 
-        label.font = _font
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        line.strokeColor = _lineColor.cgColor
         label.textColor = _textColor
-        label.textAlignment = .center
+        CATransaction.commit()
     }
 
     public func onUpdateSelectedState(_ label: VKLabel) {
 
+        let line = label.underlineLayer()
+
         if label.isSelected {
 
-            _line.strokeColor = _selectedLineColor.cgColor
+            line.strokeColor = _selectedLineColor.cgColor
 
             if label.animateWhileSelected {
-
-                let colors = [_lineColor.cgColor,
-                _selectedLineColor.cgColor,
-                _selectedLineColor.cgColor,
-                _lineColor.cgColor]
-
-                let animation = animateSelection(keyPath: #keyPath(CAShapeLayer.strokeColor), values: colors)
-                _line.add(animation, forKey: "strokeColorAnimation")
+                if let animation = selectionStrokeAnimationTemplate.copy() as? CAKeyframeAnimation {
+                    line.add(animation, forKey: Self.strokeColorAnimationKey)
+                }
             }
         } else {
 
-            _line.removeAllAnimations()
-            _line.strokeColor = _lineColor.cgColor
+            line.removeAnimation(forKey: Self.strokeColorAnimationKey)
+
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            line.strokeColor = _lineColor.cgColor
+            CATransaction.commit()
         }
     }
 
     public func onUpdateErrorState(_ label: VKLabel) {
 
-        if label.isError {
+        let line = label.underlineLayer()
+        line.removeAnimation(forKey: Self.strokeColorAnimationKey)
 
-            _line.removeAllAnimations()
-            _line.strokeColor = _errorLineColor.cgColor
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+
+        if label.isError {
+            line.strokeColor = _errorLineColor.cgColor
             label.textColor = _errorTextColor
         } else {
-
-            _line.strokeColor = _lineColor.cgColor
+            line.strokeColor = _lineColor.cgColor
             label.textColor = _textColor
         }
+
+        CATransaction.commit()
     }
 
     public func onLayoutSubviews(_ label: VKLabel) {
 
         let bounds = label.bounds
-        let path = UIBezierPath()
+        guard bounds != label.lastUnderlineLayoutBounds else { return }
+
+        label.lastUnderlineLayoutBounds = bounds
+
+        let line = label.underlineLayer()
         let y = bounds.maxY - _lineWidth / 2
+
+        var path = CGMutablePath()
         path.move(to: CGPoint(x: bounds.minX, y: y))
         path.addLine(to: CGPoint(x: bounds.maxX, y: y))
-        _line.path = path.cgPath
+        line.path = path
+    }
+
+    private func applyBaseStyle(to label: VKLabel) {
+        let line = label.underlineLayer()
+
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+
+        line.strokeColor = _lineColor.cgColor
+        line.lineWidth = _lineWidth
+        if line.superlayer == nil {
+            label.layer.addSublayer(line)
+        }
+
+        label.font = _font
+        label.textColor = _textColor
+        label.textAlignment = .center
+
+        CATransaction.commit()
     }
 }

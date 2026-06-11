@@ -75,9 +75,9 @@ VKPinCodeView is open to contribute, see contribution notes.
 - Xcode 10.2+
 - Swift 5.0
 
-## Author
+## Authors
 
-Made with :heart: by Vladimir Kokhanevich
+Made with :heart: by Vladimir Kokhanevich and Pedro Paulo de Amorim
 
 
 ## License
