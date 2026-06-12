@@ -235,8 +235,10 @@ public class VKPinCodeView: UIView, UITextInputTraits {
     override public func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         guard layoutDirection == .default else { return }
-        guard previousTraitCollection?.layoutDirection != traitCollection.layoutDirection else { return }
-        refreshLabelsForLayoutDirectionChange()
+        if #available(iOS 10.0, *) {
+            guard previousTraitCollection?.layoutDirection != traitCollection.layoutDirection else { return }
+            refreshLabelsForLayoutDirectionChange()
+        }
     }
 
     // MARK: Overrides
